@@ -91,7 +91,7 @@ func main() {
 	mergeRequests, _, err := git.MergeRequests.ListMergeRequests(&gitlab.ListMergeRequestsOptions{
 		State:    gitlab.Ptr("opened"),
 		AuthorID: gitlab.Ptr(currentUser.ID),
-		Scope:    gitlab.Ptr("all"),
+		Scope:    gitlab.Ptr("assigned_to_me"),
 	})
 	if err != nil {
 		log.Fatal(err)
