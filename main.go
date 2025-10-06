@@ -91,18 +91,30 @@ func main() {
 	mergeRequests, _, err := git.MergeRequests.ListMergeRequests(&gitlab.ListMergeRequestsOptions{
 		State:    gitlab.Ptr("opened"),
 		AuthorID: gitlab.Ptr(currentUser.ID),
-		Scope:    gitlab.Ptr("assigned_to_me"),
+		Scope:    gitlab.Ptr("all"),
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	if len(mergeRequests) == 0 {
-		log.Fatal("No open merge requests found 🚫")
+
+	projectsMRs := filterMRsByProjectId(mergeRequests, projects[projectIndex].ID)
+
+	if len(projectsMRs) == 0 {
+		fmt.Printf("\nNo open merge requests found 🚫")
+		return
 	}
 
-	for _, mr := range mergeRequests {
-		if mr.ProjectID == projects[projectIndex].ID {
-			fmt.Printf("\n%s (%s)", mr.Title, strings.Join(mr.Labels, ", "))
+	for _, mr := range projectsMRs {
+		fmt.Printf("\n%s (%s)", mr.Title, strings.Join(mr.Labels, ", "))
+	}
+}
+
+func filterMRsByProjectId(mrs []*gitlab.BasicMergeRequest, projectId int) []*gitlab.BasicMergeRequest {
+	var result []*gitlab.BasicMergeRequest
+	for _, mr := range mrs {
+		if mr.ProjectID == projectId {
+			result = append(result, mr)
 		}
 	}
+	return result
 }
