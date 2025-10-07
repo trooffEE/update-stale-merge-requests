@@ -5,6 +5,11 @@
 go install github.com/trooffEE/update-stale-merge-requests@latest
 ```
 
+### Usage
+```shell
+update-stale-merge-requests # ease as that!
+```
+
 ### This project requires 2 inputs to work, it will request them on first launch
 1. GitLab Host (for instance for URL https://gitlab.test.test - host is `gitlab.test.test` so pass it when requested by script
 2. Personal Access Token (**api rights only**) Read about it [here](https://docs.gitlab.com/user/profile/personal_access_tokens), usually it should be created here `https://<YOUR_GITLAB_HOST>/-/user_settings/personal_access_tokens`
