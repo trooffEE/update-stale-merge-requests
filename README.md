@@ -1,5 +1,7 @@
 ## `update-stale-merge-requests` is just handy script to update MR on target branch so you don't have to do it manually 🔧
 
+### Installation: `go install github.com/trooffEE/update-stale-merge-requests@latest`
+
 ### This project requires 2 inputs to work, it will request them on first launch
 1. GitLab Host (for instance for URL https://gitlab.test.test - host is `gitlab.test.test` so pass it when requested by script
 2. Personal Access Token (**api rights only**) Read about it [here](https://docs.gitlab.com/user/profile/personal_access_tokens), usually it should be created here `https://<YOUR_GITLAB_HOST>/-/user_settings/personal_access_tokens`
