@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 
 	"github.com/spf13/viper"
@@ -100,13 +101,17 @@ func main() {
 	projectsMRs := filterMRsByProjectId(mergeRequests, projects[projectIndex].ID)
 
 	if len(projectsMRs) == 0 {
-		fmt.Printf("\nNo open merge requests found 🚫")
+		fmt.Printf("\nNo open merge requests for user \"%s\" found 🚫", currentUser.Email)
 		return
 	}
 
+	fmt.Printf("\nRebasing all target branches...")
+	var wg sync.WaitGroup
 	for _, mr := range projectsMRs {
-		fmt.Printf("\n%s (%s)", mr.Title, strings.Join(mr.Labels, ", "))
+		wg.Go(func() { rebaseMRIfPossible(git, mr) })
 	}
+	wg.Wait()
+	fmt.Printf("✅ Done")
 }
 
 func filterMRsByProjectId(mrs []*gitlab.BasicMergeRequest, projectId int) []*gitlab.BasicMergeRequest {
@@ -117,4 +122,35 @@ func filterMRsByProjectId(mrs []*gitlab.BasicMergeRequest, projectId int) []*git
 		}
 	}
 	return result
+}
+
+func rebaseMRIfPossible(git *gitlab.Client, mr *gitlab.BasicMergeRequest) {
+	comparison, _, err := git.Repositories.Compare(mr.ProjectID, &gitlab.CompareOptions{
+		From: &mr.SourceBranch,
+		To:   &mr.TargetBranch,
+	})
+	if err != nil {
+		log.Println("Error comparing merge requests: ", err)
+		return
+	}
+
+	if !mr.HasConflicts && len(comparison.Commits) != 0 {
+		_, err := git.MergeRequests.RebaseMergeRequest(mr.ProjectID, mr.IID, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	var (
+		icon        = "✅"
+		information = fmt.Sprintf("%s\n", mr.WebURL)
+	)
+	if mr.HasConflicts {
+		icon = "❌"
+		information = fmt.Sprintf("resolve conflict: %s\n", mr.WebURL)
+	} else if len(comparison.Commits) == 0 {
+		icon = "🙏"
+		information = fmt.Sprintf("up to date, rebase will not be performed: %s\n", mr.WebURL)
+	}
+	fmt.Printf("%s %s\n%s\n", icon, mr.Title, information)
 }
