@@ -2,8 +2,7 @@
 
 ### This project requires 2 inputs to work, it will request them on first launch
 1. GitLab Host (for instance for URL https://gitlab.test.test - host is `gitlab.test.test` so pass it when requested by script
-2. Personal Access Token (**api rights only**) Read about it here - https://docs.gitlab.com/user/profile/personal_access_tokens,
-usually it can be created here `https://<YOUR_GITLAB_HOST>/-/user_settings/personal_access_tokens`
+2. Personal Access Token (**api rights only**) Read about it [here](https://docs.gitlab.com/user/profile/personal_access_tokens), usually it should be created here `https://<YOUR_GITLAB_HOST>/-/user_settings/personal_access_tokens`
 
 These inputs are required to perform actions with your rights on hosts MRs, **they are stored locally on machine** (can check source code it fairly straight forward on purpose)
 
