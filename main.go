@@ -105,7 +105,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("\nRebasing all target branches...")
+	fmt.Printf("\nRebasing all target branches...\n")
 	var wg sync.WaitGroup
 	for _, mr := range projectsMRs {
 		wg.Go(func() { rebaseMRIfPossible(git, mr) })
